@@ -1,12 +1,23 @@
+const readline = require("readline");
+
 class Character {
-  constructor(name) {
+  constructor(name,hp) {
     this.name = name;
-    this.hp = 20;
-  }
-  isAlive() {
-    return this.hp > 0;
+    this.hp = hp;
   }
 }
+// 体力を設定
+const hp = 20;
+// 攻撃するダメージ量を設定する
+const attackDamage = 10;
+// 回復する量を設定する
+const recoveryHp = 2;
+
+// 標準入出力
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 // サイコロを振る関数（1〜6）
 function rollDice() {
@@ -14,12 +25,15 @@ function rollDice() {
 }
 
 // 勇者とドラゴンのインスタンス
-const hero = new Character("勇者");
-const dragon = new Character("ドラゴン");
+const hero = new Character("勇者",20);
+const dragon = new Character("ドラゴン",20);
+
 
 // 勇者の行動（アタック or ディフェンス）を決める（例としてランダム）
-function heroAction() {
-  return Math.random() < 0.5 ? "attack" : "defense";
+function heroAction(input) {
+  if (input === "1") return "attack";
+  else if (input === "2") return "defense";
+  else return null; 
 }
 
 // ドラゴンの行動はランダム
@@ -28,14 +42,10 @@ function dragonAction() {
 }
 
 // ゲームの1ターンを処理する関数
-function gameTurn() {
+function gameTurn(hAction, dAction) {
   console.log(`\n--- 新しいターン ---`);
   console.log(`勇者HP: ${hero.hp}, ドラゴンHP: ${dragon.hp}`);
-
-  const hAction = heroAction();
-  const dAction = dragonAction();
-  console.log(`勇者は${hAction}、ドラゴンは${dAction}`);
-
+  
   if (hAction === "attack" && dAction === "defense") {
     console.log("自分の攻撃が防がれた！ダメージなし");
   } else if (hAction === "defense" && dAction === "attack") {
@@ -50,26 +60,26 @@ function gameTurn() {
       retryCount++;
       if (retryCount >= 5) {
         console.log("振り直し5回以上！勇者の攻撃ターン！");
-        dragon.hp -= 5;
-        console.log(`ドラゴンのHPが5減った！現在HP: ${dragon.hp}`);
+        dragon.hp -= attackDamage;
+        console.log(`ドラゴンのHPが${attackDamage}減った！現在HP: ${dragon.hp}`);
         return;
       }
     } while (hRoll === dRoll);
-
+    
     if (hRoll > dRoll) {
-      console.log("勇者の攻撃！ドラゴンのHPが5減った！");
-      dragon.hp -= 5;
+      console.log(`勇者の攻撃！ドラゴンのHPが${attackDamage}減った！`);
+      dragon.hp -= attackDamage;
     } else {
-      console.log("ドラゴンの攻撃！勇者のHPが5減った！");
-      hero.hp -= 5;
+      console.log(`ドラゴンの攻撃！勇者のHPが${attackDamage}減った！`);
+      hero.hp -= attackDamage;
     }
   } else if (hAction === "defense" && dAction === "defense") {
-    hero.hp += 2;
-    dragon.hp += 2;
-    console.log("両者防御！双方HPが2回復！");
+    hero.hp += recoveryHp;
+    dragon.hp += recoveryHp;
+    console.log(`両者防御！双方HPが${recoveryHp}回復！`);
     console.log(`勇者HP: ${hero.hp}, ドラゴンHP: ${dragon.hp}`);
   }
-
+  
   // HPチェック
   if (hero.hp <= 0 && dragon.hp <= 0) {
     console.log("勇者とドラゴンが同時に倒れた！世界には誰もいなくなった...");
@@ -85,12 +95,27 @@ function gameTurn() {
 
 // メインループ（ゲーム開始）
 function gameLoop() {
-  while (true) {
-    const result = gameTurn();
-    if (result === "end") break;
-  }
-  console.log("ゲーム終了");
-}
+  // ここで値を入力してもらってその後判断してもらう。
+  rl.question('1:アタック,2:ディフェンスのどちらかを選んでください:', (answer) => {
+    const hAction = heroAction(answer);
+    if(!hAction) {
+      console.log('無効な入力です。1か2を入力してください');
+      rl.close();
+      return;
+    }
+
+    const dAction = dragonAction();
+    console.log(dAction);
+    const result = gameTurn(hAction, dAction);
+
+    if (result === "end") {
+      console.log("ゲーム終了");
+      rl.close();
+    } else {
+      gameLoop(); // 次のターンへ
+    }
+  });
+}1
 
 // ゲームスタート
 gameLoop();
