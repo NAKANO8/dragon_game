@@ -1,15 +1,13 @@
 const readline = require("readline");
 
 class Character {
-  constructor(name) {
+  constructor(name,hp) {
     this.name = name;
-    this.hp = 20;
-  }
-  isAlive() {
-    return this.hp > 0;
+    this.hp = hp;
   }
 }
-
+// 体力を設定
+const hp = 20;
 // 攻撃するダメージ量を設定する
 const attackDamage = 10;
 // 回復する量を設定する
@@ -27,8 +25,8 @@ function rollDice() {
 }
 
 // 勇者とドラゴンのインスタンス
-const hero = new Character("勇者");
-const dragon = new Character("ドラゴン");
+const hero = new Character("勇者",20);
+const dragon = new Character("ドラゴン",20);
 
 
 // 勇者の行動（アタック or ディフェンス）を決める（例としてランダム）
