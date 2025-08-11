@@ -13,7 +13,7 @@ const attackDamage = 10;
 // 回復する量を設定する
 const recoveryHp = 2;
 
-// 標準入出力
+// 標準入出力 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
