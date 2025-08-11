@@ -8,6 +8,11 @@ class Character {
   }
 }
 
+// 攻撃するダメージ量を設定する
+const attackDamage = 10;
+// 回復する量を設定する
+const recoveryHp = 2;
+
 // サイコロを振る関数（1〜6）
 function rollDice() {
   return Math.floor(Math.random() * 6) + 1;
@@ -50,23 +55,23 @@ function gameTurn() {
       retryCount++;
       if (retryCount >= 5) {
         console.log("振り直し5回以上！勇者の攻撃ターン！");
-        dragon.hp -= 5;
-        console.log(`ドラゴンのHPが5減った！現在HP: ${dragon.hp}`);
+        dragon.hp -= attackDamage;
+        console.log(`ドラゴンのHPが${attackDamage}減った！現在HP: ${dragon.hp}`);
         return;
       }
     } while (hRoll === dRoll);
 
     if (hRoll > dRoll) {
-      console.log("勇者の攻撃！ドラゴンのHPが5減った！");
-      dragon.hp -= 5;
+      console.log(`勇者の攻撃！ドラゴンのHPが${attackDamage}減った！`);
+      dragon.hp -= attackDamage;
     } else {
-      console.log("ドラゴンの攻撃！勇者のHPが5減った！");
-      hero.hp -= 5;
+      console.log(`ドラゴンの攻撃！勇者のHPが${attackDamage}減った！`);
+      hero.hp -= attackDamage;
     }
   } else if (hAction === "defense" && dAction === "defense") {
-    hero.hp += 2;
-    dragon.hp += 2;
-    console.log("両者防御！双方HPが2回復！");
+    hero.hp += recoveryHp;
+    dragon.hp += recoveryHp;
+    console.log(`両者防御！双方HPが${recoveryHp}回復！`);
     console.log(`勇者HP: ${hero.hp}, ドラゴンHP: ${dragon.hp}`);
   }
 
