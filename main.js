@@ -1,3 +1,5 @@
+const readline = require("readline");
+
 class Character {
   constructor(name) {
     this.name = name;
@@ -13,6 +15,12 @@ const attackDamage = 10;
 // 回復する量を設定する
 const recoveryHp = 2;
 
+// 標準入出力
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
 // サイコロを振る関数（1〜6）
 function rollDice() {
   return Math.floor(Math.random() * 6) + 1;
@@ -22,9 +30,12 @@ function rollDice() {
 const hero = new Character("勇者");
 const dragon = new Character("ドラゴン");
 
+
 // 勇者の行動（アタック or ディフェンス）を決める（例としてランダム）
-function heroAction() {
-  return Math.random() < 0.5 ? "attack" : "defense";
+function heroAction(input) {
+  if (input === "1") return "attack";
+  else if (input === "2") return "defense";
+  else return null; 
 }
 
 // ドラゴンの行動はランダム
@@ -33,14 +44,10 @@ function dragonAction() {
 }
 
 // ゲームの1ターンを処理する関数
-function gameTurn() {
+function gameTurn(hAction, dAction) {
   console.log(`\n--- 新しいターン ---`);
   console.log(`勇者HP: ${hero.hp}, ドラゴンHP: ${dragon.hp}`);
-
-  const hAction = heroAction();
-  const dAction = dragonAction();
-  console.log(`勇者は${hAction}、ドラゴンは${dAction}`);
-
+  
   if (hAction === "attack" && dAction === "defense") {
     console.log("自分の攻撃が防がれた！ダメージなし");
   } else if (hAction === "defense" && dAction === "attack") {
@@ -60,7 +67,7 @@ function gameTurn() {
         return;
       }
     } while (hRoll === dRoll);
-
+    
     if (hRoll > dRoll) {
       console.log(`勇者の攻撃！ドラゴンのHPが${attackDamage}減った！`);
       dragon.hp -= attackDamage;
@@ -74,7 +81,7 @@ function gameTurn() {
     console.log(`両者防御！双方HPが${recoveryHp}回復！`);
     console.log(`勇者HP: ${hero.hp}, ドラゴンHP: ${dragon.hp}`);
   }
-
+  
   // HPチェック
   if (hero.hp <= 0 && dragon.hp <= 0) {
     console.log("勇者とドラゴンが同時に倒れた！世界には誰もいなくなった...");
@@ -90,12 +97,27 @@ function gameTurn() {
 
 // メインループ（ゲーム開始）
 function gameLoop() {
-  while (true) {
-    const result = gameTurn();
-    if (result === "end") break;
-  }
-  console.log("ゲーム終了");
-}
+  // ここで値を入力してもらってその後判断してもらう。
+  rl.question('1:アタック,2:ディフェンスのどちらかを選んでください:', (answer) => {
+    const hAction = heroAction(answer);
+    if(!hAction) {
+      console.log('無効な入力です。1か2を入力してください');
+      rl.close();
+      return;
+    }
+
+    const dAction = dragonAction();
+    console.log(dAction);
+    const result = gameTurn(hAction, dAction);
+
+    if (result === "end") {
+      console.log("ゲーム終了");
+      rl.close();
+    } else {
+      gameLoop(); // 次のターンへ
+    }
+  });
+}1
 
 // ゲームスタート
 gameLoop();
