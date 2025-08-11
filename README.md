@@ -1,6 +1,9 @@
 # dragon_game
 ## JSのお勉強に簡単なプログラムを組んでいます。
 ## フローチャート
+# ゲームのフローチャート
+
+```mermaid
 flowchart TD
     Start[開始]
     Start --> InitHP[勇者・ドラゴンのHPを20にセット]
